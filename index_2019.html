@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>AirInterop Tokyo 2019</title>
+    <meta name="viewport" content="width=device-width">
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-1736780-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>      
+    <style>
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        blockquote {
+            margin-top:2.5px;
+            margin-bottom:2.5px;
+            border-left: 5px solid #0d47a1;
+        }
+
+        .card .card-content {
+            padding: 5px;
+        }
+        
+        .flex{
+            padding: 2.5% 0;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-top:0px;
+        }
+
+        #registered {
+            width: 200px;
+            font-size: 30px;
+        }
+
+        .twitter-tweet {
+            min-width: initial !important;
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+        }
+
+        .CallToAction {
+            display: none !important;
+        }
+
+        .inputBar {
+            display: flex;
+        }
+
+        div.inputBar > button {
+            margin-right: 20px;
+        }
+
+        div.inputBar > input[type=text] {
+            width: 200px;
+            height: 2.5rem;
+        }
+
+        p.subtitle {
+            font-size: 2em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        a.brand-logo {
+            padding-left: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+    <nav>
+        <div class="nav-wrapper blue darken-2">
+            <a href="#" class="brand-logo">AirInterop 2019</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="https://www.slideshare.net/sho7650/airinterop2014" target=”_blank”>基調講演</a></li>
+                <li><a href="https://togetter.com/t/airinterop" target=”_blank”>Togetter</a>
+                <li><a href="https://twitter.com/airinterop" target=”_blank”>Twitter</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="app">
+        <div class="row">
+            <div class="col s12 m9">
+                <div class="row">
+                    <div class="col s12 m12">
+                        <p class="subtitle">エアーインタロップ温故知新</p>
+                        <div class="hide-on-med-and-up">
+                            <a href="#registered">事前登録はコチラ</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="inputBar">
+                    <button v-on:click="updateDefaultList" class="waves-effect waves-light btn blue darken-4">ランダム</button>
+                    <input v-model="inputId" placeholder="@YourName" pattern="^@.*" type='text' required />
+                    <button class="waves-effect waves-light btn blue darken-4" v-on:click="updateTweeetList">抽出</button>
+                </div>
+                <div class="row">
+                    <div v-for="tweet in tweets">
+                        <div class="col s12 m4">
+                            <div class="card">
+                                <div class="card-content" v-html="tweet"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+            <div class="col s12 m3">
+                <a href="http://twitter.com/share?text=AirInteropに事前登録しました&url=https://www.airinterop.jp&hashtags=airinterop事前登録,airinterop" onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;" rel="nofollow"><button id="registered"class="waves-effect waves-light btn-large blue darken-4">事前登録</button></a>
+                <h4>申込者</h4>
+                <p>1時間に1回更新</p>
+                <div class="flex">
+                    <div v-for="regstered in regstereds">
+                        <img :src="regstered.url">
+                    </div>
+                </div>
+            </div>            
+        </div>
+
+
+    </div>
+</main>
+    <footer class="page-footer blue darken-2">
+        <div class="footer-copyright">
+            <div class="container">
+            © 2019 @kongou_ae
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        var app = new Vue(
+        {
+            el: '#app',
+            data: {
+                tweets:null,
+                inputId: '',
+                regstereds:null
+            },
+            mounted() {
+                axios
+                .get('https://api.airinterop.jp/api/resitered')
+                .then(response =>{
+                    this.regstereds = response.data
+                })
+
+                let oembedTweets = [];
+                axios
+                .get('https://api.airinterop.jp/api/users')
+                .then(response => {
+                    this.tweets = response.data
+                    this.tweets.map((tweet,idx) => {
+                        axios
+                        .get('https://api.airinterop.jp/api/oembed/' + tweet.username + '/' + tweet.tweetId)
+                        .then(response => {
+                            oembedTweets.push(response.data.html)
+                            this.$nextTick(() => {
+                                twttr.widgets.load(); 
+                            })
+                        })
+                    })
+                    this.tweets = oembedTweets
+                })
+
+            },
+            methods: {
+                updateTweeetList(){
+                    let oembedTweets = [];
+                
+                    axios
+                    .get('https://api.airinterop.jp/api/user/' + this.inputId.replace('@',''))
+                    .then(response => {
+                        this.tweets = response.data
+                        this.tweets.map((tweet,idx) => {
+                            axios
+                            .get('https://api.airinterop.jp/api/oembed/' + tweet.username + '/' + tweet.tweetId)
+                            .then(response => {
+                                oembedTweets.push(response.data.html)
+                                this.$nextTick(() => {
+                                    twttr.widgets.load(); 
+                                })
+                            })
+                        })
+                        this.tweets = oembedTweets
+                    })
+                },
+                updateDefaultList(){
+                    let oembedTweets = [];
+                    axios
+                    .get('https://api.airinterop.jp/api/users')
+                    .then(response => {
+                        this.tweets = response.data
+                        this.tweets.map((tweet,idx) => {
+                            axios
+                            .get('https://api.airinterop.jp/api/oembed/' + tweet.username + '/' + tweet.tweetId)
+                            .then(response => {
+                                oembedTweets.push(response.data.html)
+                                this.$nextTick(() => {
+                                    twttr.widgets.load(); 
+                                })
+                            })
+                        })
+                        this.tweets = oembedTweets
+                    })
+                }
+            }
+        })
+    </script>  
+
+
+</body>    
+</html>

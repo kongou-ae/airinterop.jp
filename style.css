@@ -1,0 +1,96 @@
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+/*    justify-content: center; */
+    align-items: center; 
+}
+
+#bet {
+    display: inline-block;
+}
+
+#spinMachine {
+    padding: 10px 10px 0px 10px;
+    width: 310px;
+    height:105px;
+    border: 5px solid goldenrod;
+}
+
+.picture {
+    width: 100px;
+    height: 100px;
+    animation-duration: 2s;
+    animation-name: spin;
+}
+
+/*
+@keyframes spin {
+    from {
+        transform: rotateX(2000deg);
+    }
+    to {}
+}
+
+#spin {
+    padding: 8px 15px;
+    color: #ffffff;
+    border-radius: 2px;
+    background-image: linear-gradient(180deg, #FFEB3B 0%, #F57F17 100%);
+    cursor: pointer;
+}
+*/
+
+#spin:disabled {
+    opacity: 0.3;
+}
+
+#message {
+    color: red;
+    font-size: 130%;
+}
+
+h1 {
+    text-align: center;
+}
+
+div.bank {
+    margin-top: 10px;
+}
+
+div.bank > label {
+    display: inline-flex;
+}
+
+div.bet {
+    margin-top: 5px;
+}
+
+div.bet > label {
+    display: inline-flex;
+}
+
+footer {
+    margin-top: auto;
+}
+
+div.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: gainsboro;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+
+div.footer > p {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+div.footer > p > a {
+    cursor:default;/*マウスカーソルを矢印のまま変えない*/
+    text-decoration:none;/*下線を消す*/
+    color:#000000;/*非リンクの文字色と同じにする*/
+}
